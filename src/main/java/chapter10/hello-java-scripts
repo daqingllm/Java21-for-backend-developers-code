@@ -1,0 +1,11 @@
+#!/usr/bin/java --source 20
+
+// 通过以下两个命令执行
+// chmod +x hello-java-scripts
+// ./hello-java-scripts
+
+public class HelloWorldScript {
+    public static void main(String[] args) {
+        System.out.println("Hello, Java scripts!");
+    }
+}

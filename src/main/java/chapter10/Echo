@@ -1,0 +1,43 @@
+#!/usr/bin/java --source 20
+
+// 通过以下命令测试：
+// chmod +x Echo
+// echo 鱼耳语音 | ./Echo
+// cat 电话簿| ./Echo --unique
+// cat 电话簿| ./Echo --unique --sort
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.Collator;
+import java.util.stream.Stream;
+
+public class Echo {
+
+    public static void main(String[] args) throws IOException {
+        var lines = readInput();
+        for (var arg : args)
+            lines = modifyStream(arg, lines);
+        lines.forEach(System.out::println);
+    }
+
+    private static Stream<String> modifyStream(String arg, Stream<String> input) {
+        return switch (arg) {
+            case "--sort" -> input.sorted(Collator.getInstance(java.util.Locale.CHINA));
+            case "--unique" -> input.distinct();
+            default -> {
+                System.out.println("Unknown argument '" + arg + "'.");
+                yield input;
+            }
+        };
+    }
+
+    private static Stream<String> readInput() throws IOException {
+        var reader = new BufferedReader(new InputStreamReader(System.in));
+        if (!reader.ready())
+            return Stream.empty();
+        else
+            return reader.lines();
+    }
+
+}
