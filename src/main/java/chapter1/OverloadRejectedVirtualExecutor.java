@@ -40,33 +40,34 @@ public class OverloadRejectedVirtualExecutor implements ExecutorService {
                     if (processCpuLoad > 0.99) {
                         overload = ++cpuOverloadCount > 2;
                         log.info("CPU_Load: {}% , Process_CPU_Load: {}%", cpuLoad * 100, processCpuLoad * 100);
+                    } else {
+                        cpuOverloadCount = 0;
+                        overload = false;
                     }
                     if (overload) {
                         continue;
                     }
                 }
-                cpuOverloadCount = 0;
 
                 // 连续3s Memory Used > 99%，设置为过载
                 var usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
                 var maxMemory = Runtime.getRuntime().maxMemory();
                 if (100d * usedMemory / maxMemory > 99) {
                     overload = ++memoryOverloadCount > 2;
+                } else {
+                    memoryOverloadCount = 0;
+                    overload = false;
                 }
                 if (overload) {
                     continue;
                 }
-                memoryOverloadCount = 0;
-
-                overload = false;
             }
         });
         log.info("dubbo virtual thread executor init.");
     }
 
     private void reject() {
-        RejectedExecutionException e = new RejectedExecutionException("Dubbo server is overload now!");
-        throw e;
+        throw new RejectedExecutionException("Dubbo server is overload now!");
     }
 
     @Override
